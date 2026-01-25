@@ -106,20 +106,10 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-//	 DS18B20_SetPinOutput();
-//	 DS18B20_WriteByte(0xCC);
-	 //HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_SET);
-	 //HAL_Delay(10);
-	 //delay_us(40);
-	 //HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_RESET);
-//	 HAL_Delay(1000);
-     uint8_t Init_success = DS18B20_Init();
-     temp_celsius = DS18B20_ReadTemp();
-//     printf("Temp = %.3f\r\n", temp_celsius);
-     //HAL_UART_Transmit(&huart2, temp_celsius, sizeof(temp_celsius), 100);
-     HAL_Delay(100);
-	 //read_status = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_9);
-	 //delay_us(100);
+	  DS18B20_Init();
+      temp_celsius = DS18B20_ReadTemp();
+      HAL_Delay(100);
+
   }
   /* USER CODE END 3 */
 }

@@ -10,13 +10,33 @@
 #include <stdio.h>
 #include <stdint.h>
 
+//Port and Pin Definition - Configurable Parameters
+//Currently only supporting 12-bit resolution
+#define DS18B20_GPIO_PORT 		GPIOA
+#define DS18B20_GPIO_PIN 		GPIO_PIN_9
+//#define DS18B20_RESOLUTION		BIT_12
+
+//ROM Command Macros
+#define CMD_READ_ROM			0x33
+#define CMD_MATCH_ROM 			0x55
+#define CMD_SKIP_ROM			0xCC
+#define CMD_ALARM_SEARCH		0xEC
+
+//Function Command Macros
+#define CMD_CONVERT_T			0x44
+#define CMD_WRITE_SCRATCHPAD	0x4E
+#define CMD_READ_SCRATCHPAD 	0xBE
+#define CMD_COPY_SCRATCHPAD		0x48
+#define CMD_RECALL 				0xB8
+#define CMD_READ_POWERSUPPLY	0xB4
+
 void DS18B20_SetPinOutput(void) {
     GPIO_InitTypeDef GPIO_InitStruct = {0};
-    GPIO_InitStruct.Pin = GPIO_PIN_9;
+    GPIO_InitStruct.Pin = DS18B20_GPIO_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD; // Open-Drain for one-wire
     GPIO_InitStruct.Pull = GPIO_PULLUP;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    HAL_GPIO_Init(DS18B20_GPIO_PORT, &GPIO_InitStruct);
 }
 
 /**
@@ -24,24 +44,24 @@ void DS18B20_SetPinOutput(void) {
  */
 void DS18B20_SetPinInput(void) {
     GPIO_InitTypeDef GPIO_InitStruct = {0};
-    GPIO_InitStruct.Pin = GPIO_PIN_9;
+    GPIO_InitStruct.Pin = DS18B20_GPIO_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_PULLUP;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    HAL_GPIO_Init(DS18B20_GPIO_PORT, &GPIO_InitStruct);
 }
 
 uint8_t DS18B20_Init(void) {
     uint8_t presence_status = 0;
 
     DS18B20_SetPinOutput();
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DS18B20_GPIO_PORT, DS18B20_GPIO_PIN, GPIO_PIN_RESET);
     delay_us(480); // 480us reset pulse
 
     DS18B20_SetPinInput();
     delay_us(70); // 70us wait for presence pulse
 
-    if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_9) == GPIO_PIN_RESET) {
+    if (HAL_GPIO_ReadPin(DS18B20_GPIO_PORT, DS18B20_GPIO_PIN) == GPIO_PIN_RESET) {
     	presence_status = 1; // Presence pulse detected
     } else {
     	presence_status = 0; // No presence pulse
@@ -57,15 +77,15 @@ void DS18B20_WriteBit(uint8_t bit) {
     DS18B20_SetPinOutput();
     if (bit) {
         // Write '1'
-        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(DS18B20_GPIO_PORT, DS18B20_GPIO_PIN, GPIO_PIN_RESET);
         delay_us(6); // 6us low
-        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(DS18B20_GPIO_PORT, DS18B20_GPIO_PIN, GPIO_PIN_SET);
         delay_us(64); // 64us high
     } else {
         // Write '0'
-        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(DS18B20_GPIO_PORT, DS18B20_GPIO_PIN, GPIO_PIN_RESET);
         delay_us(60); // 60us low
-        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(DS18B20_GPIO_PORT, DS18B20_GPIO_PIN, GPIO_PIN_SET);
         delay_us(10); // 10us high
     }
 }
@@ -80,12 +100,12 @@ void DS18B20_WriteByte(uint8_t byte) {
 uint8_t DS18B20_ReadBit(void) {
     uint8_t bit = 0;
     DS18B20_SetPinOutput();
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DS18B20_GPIO_PORT, DS18B20_GPIO_PIN, GPIO_PIN_RESET);
     delay_us(2); // 2us low
 
     DS18B20_SetPinInput();
     delay_us(13); // Wait for sensor to respond
-    bit = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_9);
+    bit = HAL_GPIO_ReadPin(DS18B20_GPIO_PORT, DS18B20_GPIO_PIN);
     delay_us(45); // Wait for the end of the time slot
 
     return bit;
@@ -112,18 +132,34 @@ float DS18B20_ReadTemp(void) {
         return -127.0; // Error
     }
 
-    DS18B20_WriteByte(0xCC);
-    DS18B20_WriteByte(0x44);
+    DS18B20_WriteByte(CMD_SKIP_ROM);
+    DS18B20_WriteByte(CMD_CONVERT_T);
 
     // Wait for conversion to complete
+//    switch(DS18B20_RESOLUTION)
+//    {
+//      case BIT_9:
+//        HAL_Delay(94);
+//        break;
+//      case BIT_10:
+//        HAL_Delay(188);
+//        break;
+//      case BIT_11:
+//        HAL_Delay(375);
+//        break;
+//      default:
+//        HAL_Delay(750);
+//        break;
+//    }
+
     HAL_Delay(750); // 750ms for 12-bit resolution
 
     if (!DS18B20_Init()) {
         return -127.0; // Error
     }
 
-    DS18B20_WriteByte(0xCC);
-    DS18B20_WriteByte(0xBE);
+    DS18B20_WriteByte(CMD_SKIP_ROM);
+    DS18B20_WriteByte(CMD_READ_SCRATCHPAD);
 
     temp_lsb = DS18B20_ReadByte();
     temp_msb = DS18B20_ReadByte();
