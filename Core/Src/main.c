@@ -96,7 +96,8 @@ int main(void)
   MX_USART2_UART_Init();
   MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
-  HAL_TIM_Base_Start(&htim1);  // start the Timer1
+  //Enable the Timer 1 - To create microseconds delay
+  HAL_TIM_Base_Start(&htim1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -106,8 +107,14 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
+	  //Initialize the Sensor
 	  DS18B20_Init();
+
+	  //Call Temperature Function
       temp_celsius = DS18B20_ReadTemp();
+
+      //Loop Delay - Optional
       HAL_Delay(100);
 
   }
@@ -278,10 +285,27 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+/*************************************************************************************************************
+ *
+ * Name :		  	void delay_us (uint16_t us)
+ *
+ *
+ *
+ * Description :	This function generated microseconds delay for One-wire sensor
+ *
+ * Inputs: Delay in us
+ *
+ * Return: NONE
+ *************************************************************************************************************/
+
 void delay_us (uint16_t us)
 {
+
+	//Set the Counter value to 0
 	__HAL_TIM_SET_COUNTER(&htim1,0);  // set the counter value a 0
-	while (__HAL_TIM_GET_COUNTER(&htim1) < us);  // wait for the counter to reach the us input in the parameter
+
+	//Loop until the counter is elapsed as defined by the Input
+	while (__HAL_TIM_GET_COUNTER(&htim1) < us);
 }
 
 /* USER CODE END 4 */

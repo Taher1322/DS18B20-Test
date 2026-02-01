@@ -27,9 +27,9 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  0002000c  2**0
                   CONTENTS, READONLY
- 12 .debug_info   0000d09e  00000000  00000000  0002003c  2**0
+ 12 .debug_info   0000d0a0  00000000  00000000  0002003c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 00001b24  00000000  00000000  0002d0da  2**0
+ 13 .debug_abbrev 00001b24  00000000  00000000  0002d0dc  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  14 .debug_aranges 00000c30  00000000  00000000  0002ec00  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
@@ -37,13 +37,13 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  16 .debug_macro  00021e66  00000000  00000000  000303b8  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   0000e76f  00000000  00000000  0005221e  2**0
+ 17 .debug_line   0000e774  00000000  00000000  0005221e  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    000d0893  00000000  00000000  0006098d  2**0
+ 18 .debug_str    000d0893  00000000  00000000  00060992  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000050  00000000  00000000  00131220  2**0
+ 19 .comment      00000050  00000000  00000000  00131225  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00003354  00000000  00000000  00131270  2**2
+ 20 .debug_frame  00003354  00000000  00000000  00131278  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -351,15 +351,17 @@ Disassembly of section .text:
  8000506:	bf00      	nop
 
 08000508 <DS18B20_SetPinOutput>:
-#define CMD_READ_SCRATCHPAD 	0xBE
-#define CMD_COPY_SCRATCHPAD		0x48
 #define CMD_RECALL 				0xB8
 #define CMD_READ_POWERSUPPLY	0xB4
 
+
+//This function sets the IO as Output with predefined output states
 void DS18B20_SetPinOutput(void) {
  8000508:	b580      	push	{r7, lr}
  800050a:	b086      	sub	sp, #24
  800050c:	af00      	add	r7, sp, #0
+
+	//Init the structure that holds all the defined field
     GPIO_InitTypeDef GPIO_InitStruct = {0};
  800050e:	1d3b      	adds	r3, r7, #4
  8000510:	2200      	movs	r2, #0
@@ -368,18 +370,28 @@ void DS18B20_SetPinOutput(void) {
  8000516:	609a      	str	r2, [r3, #8]
  8000518:	60da      	str	r2, [r3, #12]
  800051a:	611a      	str	r2, [r3, #16]
+
+    //Define the Sensor Pin
     GPIO_InitStruct.Pin = DS18B20_GPIO_PIN;
  800051c:	f44f 7300 	mov.w	r3, #512	; 0x200
  8000520:	607b      	str	r3, [r7, #4]
-    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD; // Open-Drain for one-wire
+
+    //Open-Drain for One-wire
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
  8000522:	2311      	movs	r3, #17
  8000524:	60bb      	str	r3, [r7, #8]
+
+    //Define the State
     GPIO_InitStruct.Pull = GPIO_PULLUP;
  8000526:	2301      	movs	r3, #1
  8000528:	60fb      	str	r3, [r7, #12]
+
+    //Define the Frequency
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
  800052a:	2300      	movs	r3, #0
  800052c:	613b      	str	r3, [r7, #16]
+
+    //Call Init
     HAL_GPIO_Init(DS18B20_GPIO_PORT, &GPIO_InitStruct);
  800052e:	1d3b      	adds	r3, r7, #4
  8000530:	4619      	mov	r1, r3
@@ -394,13 +406,13 @@ void DS18B20_SetPinOutput(void) {
 
 08000544 <DS18B20_SetPinInput>:
 
-/**
- * @brief Sets the data pin as input.
- */
+//This function sets the IO as Input with predefined input states
 void DS18B20_SetPinInput(void) {
  8000544:	b580      	push	{r7, lr}
  8000546:	b086      	sub	sp, #24
  8000548:	af00      	add	r7, sp, #0
+
+	//Init the structure that holds all the defined field
     GPIO_InitTypeDef GPIO_InitStruct = {0};
  800054a:	1d3b      	adds	r3, r7, #4
  800054c:	2200      	movs	r2, #0
@@ -409,18 +421,28 @@ void DS18B20_SetPinInput(void) {
  8000552:	609a      	str	r2, [r3, #8]
  8000554:	60da      	str	r2, [r3, #12]
  8000556:	611a      	str	r2, [r3, #16]
+
+    //Define the Sensor Pin
     GPIO_InitStruct.Pin = DS18B20_GPIO_PIN;
  8000558:	f44f 7300 	mov.w	r3, #512	; 0x200
  800055c:	607b      	str	r3, [r7, #4]
+
+    //Input for One-wire
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
  800055e:	2300      	movs	r3, #0
  8000560:	60bb      	str	r3, [r7, #8]
+
+    //Define the State
     GPIO_InitStruct.Pull = GPIO_PULLUP;
  8000562:	2301      	movs	r3, #1
  8000564:	60fb      	str	r3, [r7, #12]
+
+    //Define the Frequency
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
  8000566:	2300      	movs	r3, #0
  8000568:	613b      	str	r3, [r7, #16]
+
+    //Call Init
     HAL_GPIO_Init(DS18B20_GPIO_PORT, &GPIO_InitStruct);
  800056a:	1d3b      	adds	r3, r7, #4
  800056c:	4619      	mov	r1, r3
@@ -435,31 +457,44 @@ void DS18B20_SetPinInput(void) {
 
 08000580 <DS18B20_Init>:
 
+
+//This function enables Initialization of DS18B20 sensor
 uint8_t DS18B20_Init(void) {
  8000580:	b580      	push	{r7, lr}
  8000582:	b082      	sub	sp, #8
  8000584:	af00      	add	r7, sp, #0
+
+	//Define variables
     uint8_t presence_status = 0;
  8000586:	2300      	movs	r3, #0
  8000588:	71fb      	strb	r3, [r7, #7]
 
+    //Set the Pin as Output
     DS18B20_SetPinOutput();
  800058a:	f7ff ffbd 	bl	8000508 <DS18B20_SetPinOutput>
+
+    //Send the Reset Pulse - 480us as defined by Datasheet Page 10
+    //https://www.analog.com/media/en/technical-documentation/data-sheets/ds18b20.pdf
     HAL_GPIO_WritePin(DS18B20_GPIO_PORT, DS18B20_GPIO_PIN, GPIO_PIN_RESET);
  800058e:	2200      	movs	r2, #0
  8000590:	f44f 7100 	mov.w	r1, #512	; 0x200
  8000594:	4810      	ldr	r0, [pc, #64]	; (80005d8 <DS18B20_Init+0x58>)
  8000596:	f000 febb 	bl	8001310 <HAL_GPIO_WritePin>
-    delay_us(480); // 480us reset pulse
+    delay_us(480);
  800059a:	f44f 70f0 	mov.w	r0, #480	; 0x1e0
  800059e:	f000 fa77 	bl	8000a90 <delay_us>
 
+    //Set the Pin as Input
     DS18B20_SetPinInput();
  80005a2:	f7ff ffcf 	bl	8000544 <DS18B20_SetPinInput>
+
+    //Wait for Presence Pulse - It can be seen between 60us to 240us - Defined by Datasheet Page 15
+    //https://www.analog.com/media/en/technical-documentation/data-sheets/ds18b20.pdf
     delay_us(70); // 70us wait for presence pulse
  80005a6:	2046      	movs	r0, #70	; 0x46
  80005a8:	f000 fa72 	bl	8000a90 <delay_us>
 
+    //Read the Presence Pulse
     if (HAL_GPIO_ReadPin(DS18B20_GPIO_PORT, DS18B20_GPIO_PIN) == GPIO_PIN_RESET) {
  80005ac:	f44f 7100 	mov.w	r1, #512	; 0x200
  80005b0:	4809      	ldr	r0, [pc, #36]	; (80005d8 <DS18B20_Init+0x58>)
@@ -467,20 +502,24 @@ uint8_t DS18B20_Init(void) {
  80005b6:	4603      	mov	r3, r0
  80005b8:	2b00      	cmp	r3, #0
  80005ba:	d102      	bne.n	80005c2 <DS18B20_Init+0x42>
-    	presence_status = 1; // Presence pulse detected
+    	//Presence pulse detected
+    	presence_status = 1;
  80005bc:	2301      	movs	r3, #1
  80005be:	71fb      	strb	r3, [r7, #7]
  80005c0:	e001      	b.n	80005c6 <DS18B20_Init+0x46>
     } else {
-    	presence_status = 0; // No presence pulse
+    	//No presence pulse
+    	presence_status = 0;
  80005c2:	2300      	movs	r3, #0
  80005c4:	71fb      	strb	r3, [r7, #7]
     }
 
-    delay_us(410); // Wait for the end of the time slot
+    //Wait for the End
+    delay_us(410);
  80005c6:	f44f 70cd 	mov.w	r0, #410	; 0x19a
  80005ca:	f000 fa61 	bl	8000a90 <delay_us>
 
+    //Return Sensor Init Status
     return presence_status;
  80005ce:	79fb      	ldrb	r3, [r7, #7]
 }
@@ -492,26 +531,31 @@ uint8_t DS18B20_Init(void) {
 
 080005dc <DS18B20_WriteBit>:
 
-
+//This function writes a bit on the 1-wire bus
 void DS18B20_WriteBit(uint8_t bit) {
  80005dc:	b580      	push	{r7, lr}
  80005de:	b082      	sub	sp, #8
  80005e0:	af00      	add	r7, sp, #0
  80005e2:	4603      	mov	r3, r0
  80005e4:	71fb      	strb	r3, [r7, #7]
+
+	 //Set the Pin as Output
     DS18B20_SetPinOutput();
  80005e6:	f7ff ff8f 	bl	8000508 <DS18B20_SetPinOutput>
     if (bit) {
  80005ea:	79fb      	ldrb	r3, [r7, #7]
  80005ec:	2b00      	cmp	r3, #0
  80005ee:	d012      	beq.n	8000616 <DS18B20_WriteBit+0x3a>
-        // Write '1'
+        //Condition to write 1
         HAL_GPIO_WritePin(DS18B20_GPIO_PORT, DS18B20_GPIO_PIN, GPIO_PIN_RESET);
  80005f0:	2200      	movs	r2, #0
  80005f2:	f44f 7100 	mov.w	r1, #512	; 0x200
  80005f6:	4813      	ldr	r0, [pc, #76]	; (8000644 <DS18B20_WriteBit+0x68>)
  80005f8:	f000 fe8a 	bl	8001310 <HAL_GPIO_WritePin>
-        delay_us(6); // 6us low
+
+        //Min delay as defined by the Datasheet - Page 16
+        //https://www.analog.com/media/en/technical-documentation/data-sheets/ds18b20.pdf
+        delay_us(6);
  80005fc:	2006      	movs	r0, #6
  80005fe:	f000 fa47 	bl	8000a90 <delay_us>
         HAL_GPIO_WritePin(DS18B20_GPIO_PORT, DS18B20_GPIO_PIN, GPIO_PIN_SET);
@@ -519,13 +563,16 @@ void DS18B20_WriteBit(uint8_t bit) {
  8000604:	f44f 7100 	mov.w	r1, #512	; 0x200
  8000608:	480e      	ldr	r0, [pc, #56]	; (8000644 <DS18B20_WriteBit+0x68>)
  800060a:	f000 fe81 	bl	8001310 <HAL_GPIO_WritePin>
-        delay_us(64); // 64us high
+
+        //Min delay as defined by the Datasheet - Page 16
+        //https://www.analog.com/media/en/technical-documentation/data-sheets/ds18b20.pdf
+        delay_us(64);
  800060e:	2040      	movs	r0, #64	; 0x40
  8000610:	f000 fa3e 	bl	8000a90 <delay_us>
-        HAL_GPIO_WritePin(DS18B20_GPIO_PORT, DS18B20_GPIO_PIN, GPIO_PIN_RESET);
-        delay_us(60); // 60us low
+        //Min delay as defined by the Datasheet - Page 16
+        //https://www.analog.com/media/en/technical-documentation/data-sheets/ds18b20.pdf
         HAL_GPIO_WritePin(DS18B20_GPIO_PORT, DS18B20_GPIO_PIN, GPIO_PIN_SET);
-        delay_us(10); // 10us high
+        delay_us(10);
     }
 }
  8000614:	e011      	b.n	800063a <DS18B20_WriteBit+0x5e>
@@ -534,7 +581,7 @@ void DS18B20_WriteBit(uint8_t bit) {
  8000618:	f44f 7100 	mov.w	r1, #512	; 0x200
  800061c:	4809      	ldr	r0, [pc, #36]	; (8000644 <DS18B20_WriteBit+0x68>)
  800061e:	f000 fe77 	bl	8001310 <HAL_GPIO_WritePin>
-        delay_us(60); // 60us low
+        delay_us(60);
  8000622:	203c      	movs	r0, #60	; 0x3c
  8000624:	f000 fa34 	bl	8000a90 <delay_us>
         HAL_GPIO_WritePin(DS18B20_GPIO_PORT, DS18B20_GPIO_PIN, GPIO_PIN_SET);
@@ -542,7 +589,7 @@ void DS18B20_WriteBit(uint8_t bit) {
  800062a:	f44f 7100 	mov.w	r1, #512	; 0x200
  800062e:	4805      	ldr	r0, [pc, #20]	; (8000644 <DS18B20_WriteBit+0x68>)
  8000630:	f000 fe6e 	bl	8001310 <HAL_GPIO_WritePin>
-        delay_us(10); // 10us high
+        delay_us(10);
  8000634:	200a      	movs	r0, #10
  8000636:	f000 fa2b 	bl	8000a90 <delay_us>
 }
@@ -555,12 +602,16 @@ void DS18B20_WriteBit(uint8_t bit) {
 
 08000648 <DS18B20_WriteByte>:
 
+
+//This function writes a byte on the 1-wire bus
 void DS18B20_WriteByte(uint8_t byte) {
  8000648:	b580      	push	{r7, lr}
  800064a:	b084      	sub	sp, #16
  800064c:	af00      	add	r7, sp, #0
  800064e:	4603      	mov	r3, r0
  8000650:	71fb      	strb	r3, [r7, #7]
+
+	//Loop to extract Bytes into Bits and write it
     for (int i = 0; i < 8; i++) {
  8000652:	2300      	movs	r3, #0
  8000654:	60fb      	str	r3, [r7, #12]
@@ -593,39 +644,56 @@ void DS18B20_WriteByte(uint8_t byte) {
 
 08000684 <DS18B20_ReadBit>:
 
+//This function reads bit-by bit from 1-wire bus
 uint8_t DS18B20_ReadBit(void) {
  8000684:	b580      	push	{r7, lr}
  8000686:	b082      	sub	sp, #8
  8000688:	af00      	add	r7, sp, #0
-    uint8_t bit = 0;
+
+	//Define variable to read the bit
+	uint8_t bit = 0;
  800068a:	2300      	movs	r3, #0
  800068c:	71fb      	strb	r3, [r7, #7]
+
+	 //Set the Pin as Output
     DS18B20_SetPinOutput();
  800068e:	f7ff ff3b 	bl	8000508 <DS18B20_SetPinOutput>
+
+    //Min delay as defined by the Datasheet - Page 16
+    //https://www.analog.com/media/en/technical-documentation/data-sheets/ds18b20.pdf
     HAL_GPIO_WritePin(DS18B20_GPIO_PORT, DS18B20_GPIO_PIN, GPIO_PIN_RESET);
  8000692:	2200      	movs	r2, #0
  8000694:	f44f 7100 	mov.w	r1, #512	; 0x200
  8000698:	480c      	ldr	r0, [pc, #48]	; (80006cc <DS18B20_ReadBit+0x48>)
  800069a:	f000 fe39 	bl	8001310 <HAL_GPIO_WritePin>
-    delay_us(2); // 2us low
+    delay_us(2);
  800069e:	2002      	movs	r0, #2
  80006a0:	f000 f9f6 	bl	8000a90 <delay_us>
 
+    //Set the Pin as Input
     DS18B20_SetPinInput();
  80006a4:	f7ff ff4e 	bl	8000544 <DS18B20_SetPinInput>
-    delay_us(13); // Wait for sensor to respond
+
+    //Wait for the Sensor to Respond
+    delay_us(13);
  80006a8:	200d      	movs	r0, #13
  80006aa:	f000 f9f1 	bl	8000a90 <delay_us>
+
+    //Read the bit value and store it
     bit = HAL_GPIO_ReadPin(DS18B20_GPIO_PORT, DS18B20_GPIO_PIN);
  80006ae:	f44f 7100 	mov.w	r1, #512	; 0x200
  80006b2:	4806      	ldr	r0, [pc, #24]	; (80006cc <DS18B20_ReadBit+0x48>)
  80006b4:	f000 fe14 	bl	80012e0 <HAL_GPIO_ReadPin>
  80006b8:	4603      	mov	r3, r0
  80006ba:	71fb      	strb	r3, [r7, #7]
-    delay_us(45); // Wait for the end of the time slot
+
+    //Min delay as defined by the Datasheet - Page 16
+    //https://www.analog.com/media/en/technical-documentation/data-sheets/ds18b20.pdf
+    delay_us(45);
  80006bc:	202d      	movs	r0, #45	; 0x2d
  80006be:	f000 f9e7 	bl	8000a90 <delay_us>
 
+    //Return the bit
     return bit;
  80006c2:	79fb      	ldrb	r3, [r7, #7]
 }
@@ -637,6 +705,8 @@ uint8_t DS18B20_ReadBit(void) {
 
 080006d0 <DS18B20_ReadByte>:
 
+
+//This function reads a byte from 1-wire bus
 uint8_t DS18B20_ReadByte(void) {
  80006d0:	b580      	push	{r7, lr}
  80006d2:	b082      	sub	sp, #8
@@ -644,6 +714,8 @@ uint8_t DS18B20_ReadByte(void) {
     uint8_t byte = 0;
  80006d6:	2300      	movs	r3, #0
  80006d8:	71fb      	strb	r3, [r7, #7]
+
+    //Loop to read bytes and store it
     for (int i = 0; i < 8; i++) {
  80006da:	2300      	movs	r3, #0
  80006dc:	603b      	str	r3, [r7, #0]
@@ -682,6 +754,8 @@ uint8_t DS18B20_ReadByte(void) {
 08000710 <DS18B20_ReadTemp>:
 
 
+//This function reads 12-bit temperature using the write commands defined by the datasheet Page 18
+//Using the Operation Example 1 sequence
 float DS18B20_ReadTemp(void) {
  8000710:	b580      	push	{r7, lr}
  8000712:	b082      	sub	sp, #8
@@ -690,48 +764,56 @@ float DS18B20_ReadTemp(void) {
     float temp_celsius;
     int16_t temp_raw;
 
+    //Init and Error Check - Ensure the connections are good and the sensor is responding
     if (!DS18B20_Init()) {
  8000716:	f7ff ff33 	bl	8000580 <DS18B20_Init>
  800071a:	4603      	mov	r3, r0
  800071c:	2b00      	cmp	r3, #0
  800071e:	d101      	bne.n	8000724 <DS18B20_ReadTemp+0x14>
-        return -127.0; // Error
+    	//Return Error if Sensor is not connected or Doesn't work
+        return -127.0;
  8000720:	4b1d      	ldr	r3, [pc, #116]	; (8000798 <DS18B20_ReadTemp+0x88>)
  8000722:	e032      	b.n	800078a <DS18B20_ReadTemp+0x7a>
     }
 
+    //Send the Skip ROM Command
     DS18B20_WriteByte(CMD_SKIP_ROM);
  8000724:	20cc      	movs	r0, #204	; 0xcc
  8000726:	f7ff ff8f 	bl	8000648 <DS18B20_WriteByte>
+
+    //Send the Convert T Command
     DS18B20_WriteByte(CMD_CONVERT_T);
  800072a:	2044      	movs	r0, #68	; 0x44
  800072c:	f7ff ff8c 	bl	8000648 <DS18B20_WriteByte>
-//      default:
-//        HAL_Delay(750);
-//        break;
-//    }
 
-    HAL_Delay(750); // 750ms for 12-bit resolution
+    //Wait 750ms for 12-bit Resolution
+    HAL_Delay(750);
  8000730:	f240 20ee 	movw	r0, #750	; 0x2ee
  8000734:	f000 fb36 	bl	8000da4 <HAL_Delay>
 
+    //Init and Error Check - Ensure the connections are good and the sensor is responding
     if (!DS18B20_Init()) {
  8000738:	f7ff ff22 	bl	8000580 <DS18B20_Init>
  800073c:	4603      	mov	r3, r0
  800073e:	2b00      	cmp	r3, #0
  8000740:	d101      	bne.n	8000746 <DS18B20_ReadTemp+0x36>
-        return -127.0; // Error
+    	//Return Error if Sensor does not respond
+        return -127.0;
  8000742:	4b15      	ldr	r3, [pc, #84]	; (8000798 <DS18B20_ReadTemp+0x88>)
  8000744:	e021      	b.n	800078a <DS18B20_ReadTemp+0x7a>
     }
 
+    //Send the Skip ROM Command
     DS18B20_WriteByte(CMD_SKIP_ROM);
  8000746:	20cc      	movs	r0, #204	; 0xcc
  8000748:	f7ff ff7e 	bl	8000648 <DS18B20_WriteByte>
+
+    //Send the Scratchpad command
     DS18B20_WriteByte(CMD_READ_SCRATCHPAD);
  800074c:	20be      	movs	r0, #190	; 0xbe
  800074e:	f7ff ff7b 	bl	8000648 <DS18B20_WriteByte>
 
+    //Read the Raw Temperature Values and Store LSB and MSB
     temp_lsb = DS18B20_ReadByte();
  8000752:	f7ff ffbd 	bl	80006d0 <DS18B20_ReadByte>
  8000756:	4603      	mov	r3, r0
@@ -741,7 +823,7 @@ float DS18B20_ReadTemp(void) {
  800075e:	4603      	mov	r3, r0
  8000760:	71bb      	strb	r3, [r7, #6]
 
-    // Combine the bytes to get the raw temperature value
+    //Combine the raw bytes into single temperature value
     temp_raw = (int16_t)(((uint16_t)temp_msb << 8) | temp_lsb);
  8000762:	79bb      	ldrb	r3, [r7, #6]
  8000764:	021b      	lsls	r3, r3, #8
@@ -751,9 +833,9 @@ float DS18B20_ReadTemp(void) {
  800076c:	4313      	orrs	r3, r2
  800076e:	80bb      	strh	r3, [r7, #4]
 
-    // Convert raw value to Celsius
-    // The temperature is stored as a 16-bit signed integer.
-    // Resolution is 1/16th of a degree Celsius (0.0625).
+    // Convert Raw value to Celsius
+    // The temperature is stored as a 16-bit signed integer
+    //Since 12-bit resolution is used - The resolution increments by 0.0625 degrees - Defined by Datasheet Page 5
     temp_celsius = (float)temp_raw * 0.0625;
  8000770:	f9b7 3004 	ldrsh.w	r3, [r7, #4]
  8000774:	ee07 3a90 	vmov	s15, r3
@@ -762,6 +844,7 @@ float DS18B20_ReadTemp(void) {
  8000780:	ee67 7a87 	vmul.f32	s15, s15, s14
  8000784:	edc7 7a00 	vstr	s15, [r7]
 
+    //Return Temperature
     return temp_celsius;
  8000788:	683b      	ldr	r3, [r7, #0]
 }
@@ -808,21 +891,26 @@ int main(void)
   MX_TIM1_Init();
  80007b4:	f000 f882 	bl	80008bc <MX_TIM1_Init>
   /* USER CODE BEGIN 2 */
-  HAL_TIM_Base_Start(&htim1);  // start the Timer1
+  //Enable the Timer 1 - To create microseconds delay
+  HAL_TIM_Base_Start(&htim1);
  80007b8:	4807      	ldr	r0, [pc, #28]	; (80007d8 <main+0x38>)
  80007ba:	f001 fbfb 	bl	8001fb4 <HAL_TIM_Base_Start>
-  while (1)
-  {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
+	  //Initialize the Sensor
 	  DS18B20_Init();
  80007be:	f7ff fedf 	bl	8000580 <DS18B20_Init>
+
+	  //Call Temperature Function
       temp_celsius = DS18B20_ReadTemp();
  80007c2:	f7ff ffa5 	bl	8000710 <DS18B20_ReadTemp>
  80007c6:	eef0 7a40 	vmov.f32	s15, s0
  80007ca:	4b04      	ldr	r3, [pc, #16]	; (80007dc <main+0x3c>)
  80007cc:	edc3 7a00 	vstr	s15, [r3]
+
+      //Loop Delay - Optional
       HAL_Delay(100);
  80007d0:	2064      	movs	r0, #100	; 0x64
  80007d2:	f000 fae7 	bl	8000da4 <HAL_Delay>
@@ -1281,8 +1369,10 @@ static void MX_GPIO_Init(void)
  8000a8c:	40020800 	.word	0x40020800
 
 08000a90 <delay_us>:
+ *
+ * Return: NONE
+ *************************************************************************************************************/
 
-/* USER CODE BEGIN 4 */
 void delay_us (uint16_t us)
 {
  8000a90:	b480      	push	{r7}
@@ -1290,12 +1380,16 @@ void delay_us (uint16_t us)
  8000a94:	af00      	add	r7, sp, #0
  8000a96:	4603      	mov	r3, r0
  8000a98:	80fb      	strh	r3, [r7, #6]
+
+	//Set the Counter value to 0
 	__HAL_TIM_SET_COUNTER(&htim1,0);  // set the counter value a 0
  8000a9a:	4b09      	ldr	r3, [pc, #36]	; (8000ac0 <delay_us+0x30>)
  8000a9c:	681b      	ldr	r3, [r3, #0]
  8000a9e:	2200      	movs	r2, #0
  8000aa0:	625a      	str	r2, [r3, #36]	; 0x24
-	while (__HAL_TIM_GET_COUNTER(&htim1) < us);  // wait for the counter to reach the us input in the parameter
+
+	//Loop until the counter is elapsed as defined by the Input
+	while (__HAL_TIM_GET_COUNTER(&htim1) < us);
  8000aa2:	bf00      	nop
  8000aa4:	4b06      	ldr	r3, [pc, #24]	; (8000ac0 <delay_us+0x30>)
  8000aa6:	681b      	ldr	r3, [r3, #0]

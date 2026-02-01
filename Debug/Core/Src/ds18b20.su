@@ -1,8 +1,8 @@
-../Core/Src/ds18b20.c:33:6:DS18B20_SetPinOutput	32	static
-../Core/Src/ds18b20.c:45:6:DS18B20_SetPinInput	32	static
-../Core/Src/ds18b20.c:54:9:DS18B20_Init	16	static
-../Core/Src/ds18b20.c:76:6:DS18B20_WriteBit	16	static
-../Core/Src/ds18b20.c:93:6:DS18B20_WriteByte	24	static
-../Core/Src/ds18b20.c:100:9:DS18B20_ReadBit	16	static
-../Core/Src/ds18b20.c:114:9:DS18B20_ReadByte	16	static
-../Core/Src/ds18b20.c:126:7:DS18B20_ReadTemp	16	static
+../Core/Src/ds18b20.c:35:6:DS18B20_SetPinOutput	32	static
+../Core/Src/ds18b20.c:57:6:DS18B20_SetPinInput	32	static
+../Core/Src/ds18b20.c:80:9:DS18B20_Init	16	static
+../Core/Src/ds18b20.c:117:6:DS18B20_WriteBit	16	static
+../Core/Src/ds18b20.c:152:6:DS18B20_WriteByte	24	static
+../Core/Src/ds18b20.c:162:9:DS18B20_ReadBit	16	static
+../Core/Src/ds18b20.c:194:9:DS18B20_ReadByte	16	static
+../Core/Src/ds18b20.c:210:7:DS18B20_ReadTemp	16	static
