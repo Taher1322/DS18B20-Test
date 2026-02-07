@@ -1,0 +1,35 @@
+# Software License Terms  
+
+This software is under the **GNU General Public License v2 (GPLv2).
+---
+
+## 1. GNU General Public License v2 (GPLv2)  
+This software is licensed under the GNU General Public License version 2 (GPLv2) **only**, as published by the Free Software Foundation.  
+
+- You may redistribute and/or modify this software under the terms of GPLv2.  
+- This license is provided **without any warranty**, including but not limited to implied warranties of **MERCHANTABILITY** or **FITNESS FOR A PARTICULAR PURPOSE**.  
+- See <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html> for details.  
+
+---
+
+## 2. Disclaimer of Warranty  
+
+THIS SOFTWARE IS PROVIDED **"AS IS"** AND WITHOUT ANY WARRANTIES OF ANY KIND, WHETHER EXPRESS, IMPLIED, OR STATUTORY.  
+THIS INCLUDES, BUT IS NOT LIMITED TO, THE IMPLIED WARRANTIES OF **MERCHANTABILITY**, **FITNESS FOR A PARTICULAR PURPOSE**, AND **NON-INFRINGEMENT**.  
+
+---
+
+## 3. Limitation of Liability  
+
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES.  
+THIS INCLUDES, BUT IS NOT LIMITED TO, DAMAGES FOR LOSS OF PROFITS, LOSS OF DATA, BUSINESS INTERRUPTION, OR ANY OTHER COMMERCIAL DAMAGES OR LOSSES, ARISING OUT OF OR RELATED TO THE USE OF THE SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.  
+
+---
+
+## 4. Reservation of Rights  
+
+All rights not expressly granted under this license are **reserved by the copyright holder**. 
+
+---
+
+© 2026 Taher Ujjainwala. All rights reserved.  
